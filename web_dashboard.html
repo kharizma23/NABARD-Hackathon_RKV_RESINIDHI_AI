@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RKV ResiNidhi AI - Field Officer Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f4f6f9;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding: 24px;
+            color: #1e293b;
+        }
+
+        .dashboard-container {
+            max-width: 1360px;
+            margin: 0 auto;
+        }
+
+        /* ---- Top Navigation ---- */
+        .top-nav {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 14px 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+            border: 1px solid #e9edf2;
+            margin-bottom: 24px;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            background: #1e3a5f;
+            color: white;
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .logo-text {
+            font-weight: 700;
+            font-size: 18px;
+            color: #0f2b38;
+        }
+
+        .logo-text span {
+            font-weight: 400;
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            font-size: 14px;
+            color: #475569;
+        }
+
+        .nav-right i {
+            color: #94a3b8;
+            margin-right: 6px;
+        }
+
+        .officer-tag {
+            background: #eef2f6;
+            padding: 6px 16px;
+            border-radius: 30px;
+            font-weight: 500;
+            font-size: 13px;
+            color: #1e293b;
+        }
+
+        /* ---- Stats Row ---- */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 20px 22px;
+            border: 1px solid #e9edf2;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: #64748b;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .stat-number {
+            font-size: 28px;
+            font-weight: 700;
+            color: #0f2b38;
+        }
+
+        .stat-number small {
+            font-size: 14px;
+            font-weight: 400;
+            color: #94a3b8;
+            margin-left: 6px;
+        }
+
+        .stat-badge {
+            font-size: 12px;
+            font-weight: 600;
+            padding: 2px 12px;
+            border-radius: 30px;
+            display: inline-block;
+            margin-top: 6px;
+        }
+
+        .stat-badge.high { background: #fee2e2; color: #b91c1c; }
+        .stat-badge.moderate { background: #fef3c7; color: #b45309; }
+        .stat-badge.low { background: #dcfce7; color: #166534; }
+
+        /* ---- Main Content (Two Columns) ---- */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1.8fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        /* -- Table Card -- */
+        .card {
+            background: #ffffff;
+            border-radius: 12px;
+            border: 1px solid #e9edf2;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 18px 24px;
+            border-bottom: 1px solid #eef2f6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-header h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #0f2b38;
+        }
+
+        .card-header .filter {
+            font-size: 13px;
+            color: #3b82f6;
+            font-weight: 500;
+            cursor: default;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+            padding: 0 4px 4px 4px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        th {
+            text-align: left;
+            padding: 14px 16px;
+            background: #f8fafc;
+            color: #475569;
+            font-weight: 600;
+            font-size: 12px;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+            border-bottom: 1px solid #e9edf2;
+        }
+
+        td {
+            padding: 14px 16px;
+            border-bottom: 1px solid #f1f5f9;
+            color: #1e293b;
+            vertical-align: middle;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .priority-num {
+            font-weight: 700;
+            color: #94a3b8;
+            font-size: 13px;
+        }
+
+        .enterprise-name {
+            font-weight: 600;
+            color: #0f2b38;
+        }
+
+        .badge-risk {
+            font-size: 12px;
+            font-weight: 700;
+            padding: 4px 14px;
+            border-radius: 30px;
+            display: inline-block;
+            letter-spacing: 0.2px;
+        }
+
+        .badge-risk.high {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .badge-risk.moderate {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-risk.low {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .action-tag {
+            background: #eef2f6;
+            padding: 4px 14px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 500;
+            color: #1e293b;
+            display: inline-block;
+            border: 1px solid #e2e8f0;
+        }
+
+        .action-tag.primary {
+            background: #1e3a5f;
+            color: white;
+            border-color: #1e3a5f;
+        }
+
+        /* -- Sidebar / Radar Card -- */
+        .radar-card {
+            padding: 0;
+        }
+
+        .radar-content {
+            padding: 20px 24px 24px 24px;
+        }
+
+        .radar-item {
+            background: #f8fafc;
+            border-radius: 10px;
+            padding: 16px 18px;
+            margin-bottom: 14px;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .radar-item .title {
+            font-weight: 600;
+            font-size: 14px;
+            color: #0f2b38;
+        }
+
+        .radar-item .desc {
+            font-size: 13px;
+            color: #475569;
+            margin-top: 4px;
+        }
+
+        .radar-item .meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 8px;
+            font-size: 13px;
+        }
+
+        .radar-item .count {
+            background: #dbeafe;
+            padding: 2px 14px;
+            border-radius: 30px;
+            font-weight: 600;
+            color: #1e3a5f;
+            font-size: 12px;
+        }
+
+        .radar-item .suggestion {
+            background: #ffffff;
+            padding: 6px 14px;
+            border-radius: 30px;
+            border: 1px solid #cbd5e1;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .shock-warning {
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            border-radius: 10px;
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .shock-warning i {
+            color: #d97706;
+            font-size: 18px;
+        }
+
+        .shock-warning p {
+            font-size: 13px;
+            color: #78350f;
+            font-weight: 500;
+        }
+
+        /* ---- Bottom: Cash Flow Widget (Page 14 data) ---- */
+        .bottom-widget {
+            background: #ffffff;
+            border-radius: 12px;
+            border: 1px solid #e9edf2;
+            padding: 20px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .widget-left {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .widget-left .label {
+            font-size: 13px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .widget-left .value {
+            font-size: 22px;
+            font-weight: 700;
+            color: #0f2b38;
+        }
+
+        .chart-bars {
+            display: flex;
+            align-items: flex-end;
+            gap: 14px;
+            height: 48px;
+        }
+
+        .bar {
+            width: 32px;
+            background: #dbeafe;
+            border-radius: 4px 4px 0 0;
+            height: 20px;
+            transition: 0.1s;
+            position: relative;
+        }
+
+        .bar.oct { height: 40px; background: #3b82f6; }
+        .bar.nov { height: 32px; background: #60a5fa; }
+        .bar.dec { height: 44px; background: #3b82f6; }
+        .bar-label {
+            font-size: 10px;
+            color: #94a3b8;
+            text-align: center;
+            margin-top: 4px;
+            font-weight: 500;
+        }
+
+        .widget-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            font-size: 14px;
+            color: #475569;
+        }
+
+        .widget-right .conf {
+            background: #eef2f6;
+            padding: 4px 14px;
+            border-radius: 30px;
+            font-size: 13px;
+        }
+
+        .widget-right .trust {
+            color: #16a34a;
+            font-weight: 500;
+        }
+
+        /* Responsive */
+        @media (max-width: 1000px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        @media (max-width: 600px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            .top-nav {
+                flex-direction: column;
+                gap: 12px;
+                align-items: flex-start;
+            }
+            .bottom-widget {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="dashboard-container">
+
+    <!-- Top Navigation -->
+    <div class="top-nav">
+        <div class="logo-area">
+            <div class="logo-icon">RKV</div>
+            <div class="logo-text">
+                ResiNidhi AI
+                <span>| Field Officer Panel</span>
+            </div>
+        </div>
+        <div class="nav-right">
+            <span><i class="fas fa-map-marker-alt"></i> Sathyamangalam Block</span>
+            <span><i class="fas fa-calendar-alt"></i> Jul 2026</span>
+            <span class="officer-tag"><i class="fas fa-user-circle"></i> Ramesh K.</span>
+        </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-label">Total Enterprises</div>
+            <div class="stat-number">42</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">High Risk</div>
+            <div class="stat-number" style="color:#b91c1c;">7 <small>↑</small></div>
+            <span class="stat-badge high">Needs immediate visit</span>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Moderate Risk</div>
+            <div class="stat-number" style="color:#b45309;">12</div>
+            <span class="stat-badge moderate">Advisory call</span>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Low Risk</div>
+            <div class="stat-number" style="color:#166534;">23</div>
+            <span class="stat-badge low">Monthly monitor</span>
+        </div>
+    </div>
+
+    <!-- Main Grid: Table + Radar -->
+    <div class="main-grid">
+        <!-- Table -->
+        <div class="card">
+            <div class="card-header">
+                <h3><i class="fas fa-list-ul" style="color:#64748b; margin-right: 8px;"></i>Priority Intervention List</h3>
+                <span class="filter"><i class="fas fa-sliders-h"></i> Sort by Risk</span>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Enterprise</th>
+                            <th>Sector</th>
+                            <th>Risk Level</th>
+                            <th>Key Reason</th>
+                            <th>Recommended Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="priority-num">1</span></td>
+                            <td><span class="enterprise-name">Lakshmi Dairy</span></td>
+                            <td>Dairy</td>
+                            <td><span class="badge-risk high">HIGH</span></td>
+                            <td>Fodder cost + EMI overlap</td>
+                            <td><span class="action-tag primary">Bridge Support</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="priority-num">2</span></td>
+                            <td><span class="enterprise-name">Ravi Poultry</span></td>
+                            <td>Poultry</td>
+                            <td><span class="badge-risk high">HIGH</span></td>
+                            <td>Feed price shock</td>
+                            <td><span class="action-tag primary">Cluster Advisory</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="priority-num">3</span></td>
+                            <td><span class="enterprise-name">Meena Retail</span></td>
+                            <td>Retail</td>
+                            <td><span class="badge-risk moderate">MODERATE</span></td>
+                            <td>Demand dip (UPI inflow -12%)</td>
+                            <td><span class="action-tag">Field Call</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="priority-num">4</span></td>
+                            <td><span class="enterprise-name">Kavya Handicrafts</span></td>
+                            <td>Handicraft</td>
+                            <td><span class="badge-risk low">LOW</span></td>
+                            <td>Stable orders</td>
+                            <td><span class="action-tag">Monthly Monitor</span></td>
+                        </tr>
+                        <tr>
+                            <td><span class="priority-num">5</span></td>
+                            <td><span class="enterprise-name">Gowri FPO</span></td>
+                            <td>FPO</td>
+                            <td><span class="badge-risk moderate">MODERATE</span></td>
+                            <td>Raw material price volatility</td>
+                            <td><span class="action-tag">Inventory Review</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Radar Sidebar -->
+        <div class="card radar-card">
+            <div class="card-header">
+                <h3><i class="fas fa-radar" style="color:#64748b; margin-right: 8px;"></i>Village / FPO Shock Radar</h3>
+                <span class="filter">Cluster view</span>
+            </div>
+            <div class="radar-content">
+                <div class="radar-item">
+                    <div class="title">🐄 Dairy Cluster Stress</div>
+                    <div class="desc">Rising fodder cost affecting multiple units.</div>
+                    <div class="meta">
+                        <span class="count">17 / 42 enterprises</span>
+                        <span class="suggestion">Bulk procurement via FPO</span>
+                    </div>
+                </div>
+
+                <div class="radar-item" style="border-left-color: #f59e0b;">
+                    <div class="title">🛒 Retail Demand Dip</div>
+                    <div class="desc">UPI inflow proxies dropped 2 weeks consecutively.</div>
+                    <div class="meta">
+                        <span class="count">8 / 15 shops</span>
+                        <span class="suggestion">Field officer visit</span>
+                    </div>
+                </div>
+
+                <div class="radar-item" style="border-left-color: #ef4444;">
+                    <div class="title">🐔 Poultry Feed Shock</div>
+                    <div class="desc">Soybean price increased 18% in last month.</div>
+                    <div class="meta">
+                        <span class="count">5 units</span>
+                        <span class="suggestion">Advisory + working capital</span>
+                    </div>
+                </div>
+
+                <div class="shock-warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <p>IMD forecast: Below-normal rainfall in this block. Monitor crop-dependent FPOs.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Widget: Entrepreneur Cash Flow Snapshot (Page 14 style) -->
+    <div class="bottom-widget">
+        <div class="widget-left">
+            <div>
+                <div class="label">Sample Enterprise Cash Flow</div>
+                <div class="value">Lakshmi Dairy</div>
+            </div>
+            <div>
+                <div class="label">Projected Balance</div>
+                <div class="value" style="color:#16a34a;">₹24,500</div>
+            </div>
+            <div>
+                <div class="label">3-Month Forecast</div>
+                <div class="chart-bars">
+                    <div style="display:flex; flex-direction:column; align-items:center;">
+                        <div class="bar oct"></div>
+                        <span class="bar-label">Oct</span>
+                    </div>
+                    <div style="display:flex; flex-direction:column; align-items:center;">
+                        <div class="bar nov"></div>
+                        <span class="bar-label">Nov</span>
+                    </div>
+                    <div style="display:flex; flex-direction:column; align-items:center;">
+                        <div class="bar dec"></div>
+                        <span class="bar-label">Dec</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="widget-right">
+            <span class="conf"><i class="fas fa-chart-line"></i> Confidence: 82%</span>
+            <span class="trust"><i class="fas fa-shield-alt"></i> Trust Passport: Verified</span>
+            <span style="background:#f1f5f9; padding:6px 14px; border-radius:30px; font-size:13px;">
+                <i class="fas fa-flag" style="color:#e67e22;"></i> Risk Alert: Oct EMI overlap
+            </span>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>
