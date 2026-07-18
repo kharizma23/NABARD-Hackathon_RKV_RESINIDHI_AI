@@ -135,3 +135,6 @@ Our focus on prevention over identification is what we believe sets us apart. We
 We are looking forward to the next rounds and we are ready to prototype this for dairy and rural retail sectors.
 
 Team Phoenix
+
+PPT demo video explanation :
+https://drive.google.com/drive/folders/1fnIYbQ0SDtjYMhio3-kiEHdS3boW7G1v?usp=sharing
